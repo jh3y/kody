@@ -20,6 +20,9 @@
       "type": "MIT"
     }
   ],
+  "scripts": {
+    "test": "make test"
+  },
   "preferGlobal": true,
   "bin": {
     "kody": "./bin/kody"
