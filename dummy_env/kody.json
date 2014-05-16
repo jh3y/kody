@@ -1,0 +1,33 @@
+{
+	"set_up_git": true,
+	"write_osx_defaults": true,
+	"install_dot_files": true,
+	"set_up_brew_cask": true,
+	"brew_install": true,
+	"install_npm_modules": true,
+	"set_fish_shell_as_default": true,
+	"brew_installs": [
+		"git",
+		"mongodb",
+		"ruby-build",
+		"rbenv",
+		"fish"
+	],
+	"brew_casks": [
+		"google-chrome",
+		"heroku-toolbelt",
+		"spotify"
+	],
+	"global_npm_modules": {
+		"sike": "latest",
+		"less": "latest",
+		"jade": "latest",
+		"gulp": "latest",
+		"grunt-cli": "latest",
+		"express-generator": "latest",
+		"docpad": "latest",
+		"component": "latest",
+		"coffee-script": "latest",
+		"bower": "latest"
+	}
+}
