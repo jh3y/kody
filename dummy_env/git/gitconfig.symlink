@@ -1,9 +1,0 @@
-# Simple gitconfig
-#
-[user]
-	name = jh3y
-	email = jhey.tompkins@gmail.com
-[credential]
-	helper = osxkeychain
-[core]
-	excludesfile = ~/.gitignore

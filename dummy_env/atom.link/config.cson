@@ -8,3 +8,5 @@
     'atom-dark-ui'
     'atom-monokai'
   ]
+'welcome':
+  'showOnStartup': false

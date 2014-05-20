@@ -34,6 +34,6 @@ exports.setUp = setUp = () ->
     name: "email"
     description: "enter your github email:"
   ], (err, result)->
-    shell.exec("sed -e 's/AUTHORNAME/" + result.name + "/g' -e 's/AUTHOREMAIL/" + result.email + "/g' -e 's/GIT_CREDENTIAL_HELPER/" + git_credential + "/g' git/gitconfig.starter", {silent: true}).output.to 'git/gitconfig.symlink'
+    shell.exec("sed -e 's/AUTHORNAME/" + result.name + "/g' -e 's/AUTHOREMAIL/" + result.email + "/g' -e 's/GIT_CREDENTIAL_HELPER/" + git_credential + "/g' git/gitconfig.starter", {silent: true}).output.to 'git/gitconfig.link'
     utils.log "git config set up and ready", "success"
     task_runner.run()
