@@ -16,13 +16,13 @@ shell = require "shelljs"
 pkg = require "../../package.json"
 utils = require "../utils"
 
-exports.set_up = set_up = (KODY_CONFIG)->
-	if shell.which("brew") isnt null and KODY_CONFIG.brew_casks.length > 0
-		shell.exec("brew prune")
-		utils.log 'Setting up Brew cask', "prompt"
-		shell.exec("brew tap caskroom/cask")
-		shell.exec("brew install brew-cask")
-		for key, value of KODY_CONFIG.brew_casks
-			utils.log 'installing ' + value
-			shell.exec("brew cask install " + value)
-		utils.log "Brew casks installed", "success"
+exports.setUp = setUp = (KODY_CONFIG)->
+  if shell.which("brew") isnt null and KODY_CONFIG.brew_casks.length > 0
+    shell.exec("brew prune")
+    utils.log 'Setting up Brew cask', "prompt"
+    shell.exec("brew tap caskroom/cask")
+    shell.exec("brew install brew-cask")
+    for key, value of KODY_CONFIG.brew_casks
+      utils.log 'installing ' + value
+      shell.exec("brew cask install " + value)
+    utils.log "Brew casks installed", "success"

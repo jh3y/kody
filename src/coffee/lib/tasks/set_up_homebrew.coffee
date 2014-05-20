@@ -1,7 +1,7 @@
 ###
 kody - http://jh3y.github.io/kody
 
-.Files installation task
+Homebrew installation and installation of brew packages.
 
 Licensed under the MIT license
 
@@ -12,32 +12,21 @@ The above copyright notice and this permission notice shall be included in all c
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 colors = require "colors"
-pkg = require "../../package.json"
 shell = require "shelljs"
+pkg = require "../../package.json"
 utils = require "../utils"
 
-exports.install = install = () ->
-  HOME_DIR = shell.exec("echo $HOME", {silent: true}).output.trim()
-  dotfiles = shell.exec("find  */*.link *.link", {silent: true}).output
-  if dotfiles.indexOf("*/*.link *.link") is -1
-    dotfiles = dotfiles.split '\n'
-    dotfiles.pop()
-    elementsfiltered = `undefined`
-    dotfiles.filter((a) ->
-      if a.split(".link").length is 2 and a.split('.link')[1].trim() is ""
-        @push a
-      true
-    , elementsfiltered = [])
-    dotfiles = elementsfiltered
-    if dotfiles.length > 0
-      utils.log "Linking .files to your home directory", "prompt"
-      for key, value of dotfiles
-        source = process.cwd() + '/' + value
-        basename = shell.exec("basename " + value, {silent: true}).output.trim()
-        if basename.indexOf('.link') isnt -1
-          basename = "/." + basename.replace ".link", ""
-          destination = HOME_DIR  + basename
-          shell.ln '-sf', source, destination
-          utils.log 'linked ' + source + ' to ' + destination + '!', "info"
-    else
-      utils.log "No .files found", "error"
+exports.install = install = (KODY_CONFIG)->
+  if shell.exec("which brew", {silent: true}).output.trim() is ""
+    utils.log "Attempting to intall Brew", "prompt"
+    shell.exec('ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"')
+    utils.log "Brew installed", "success"
+  else
+    utils.log "Brew already installed", "warn"
+  utils.log "Now running 'brew doctor'", "prompt"
+  shell.exec "brew doctor"
+  utils.log "NOTE: Take notice of anything Brew doctor has said, it may account for any issues you have with install", "warn"
+  if KODY_CONFIG.brew_installs.length > 0
+    pckgToInstall =  KODY_CONFIG.brew_installs.join " "
+    shell.exec "brew install " + pckgToInstall
+  utils.log "Brew packages installed", "success"

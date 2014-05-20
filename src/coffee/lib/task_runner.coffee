@@ -16,45 +16,47 @@ colors = require "colors"
 pkg = require "../package.json"
 shell = require "shelljs"
 utils = require "./utils"
-brew_cask = require "./tasks/set_up_brew_cask"
-dot_files = require "./tasks/install_dot_files"
-git_config = require "./tasks/git_config"
-osx = require "./tasks/osx"
-brew = require "./tasks/brew_install"
-npm = require "./tasks/npm_install"
-fish = require "./tasks/fish"
+brewCask = require "./tasks/set_up_brew_cask"
+dotfiles = require "./tasks/install_dot_files"
+gitConfig = require "./tasks/set_up_git_config"
+osx = require "./tasks/set_osx_defaults"
+brew = require "./tasks/set_up_homebrew"
+npm = require "./tasks/install_npm_modules"
+fish = require "./tasks/set_up_fish_shell"
+apm = require "./tasks/install_atom_packages"
 
 KODY_CONFIG = `undefined`
 
-taskMap = 
-	write_osx_defaults: osx.set_default
-	install_dot_files: dot_files.install
-	set_up_brew_cask: brew_cask.set_up
-	brew_install: brew.install
-	install_npm_modules: npm.install
-	set_fish_shell_as_default: fish.set_default
+taskMap =
+  install_dot_files: dotfiles.install
+  install_homebrew_and_packages: brew.install
+  install_brew_cask_and_casks: brewCask.setUp
+  install_npm_modules: npm.install
+  install_apm_packages: apm.install
+  set_fish_shell_as_default: fish.setDefault
+  set_osx_defaults: osx.setDefault
 
 grab_config = ()->
-	path = process.cwd() + '/kody.json'
-	KODY_CONFIG = require(path)
+  path = process.cwd() + '/kody.json'
+  KODY_CONFIG = require(path)
 
 exports.init = init = ()->
-	grab_config()
-	if KODY_CONFIG isnt `undefined`
-		if KODY_CONFIG.set_up_git
-			utils.log "Setting up Git credentials", "prompt"
-			git_config.set_up()
-		else
-			utils.log "Git credentials already set up", "info"
-			run()
+  grab_config()
+  if KODY_CONFIG isnt `undefined`
+    if KODY_CONFIG.set_up_git_config
+      utils.log "Setting up Git credentials", "prompt"
+      gitConfig.setUp()
+    else
+      utils.log "Git credentials already set up", "info"
+      run()
 
 exports.run = run = ()->
-	tasks = []
-	for map of taskMap
-		if KODY_CONFIG[map] is true
-			tasks.push 
-				func: taskMap[map]
-				args: KODY_CONFIG
-	for key, value of tasks
-		value.func KODY_CONFIG
-	utils.log "kody has completed your set tasks!", "silly"
+  tasks = []
+  for map of taskMap
+    if KODY_CONFIG[map] is true
+      tasks.push
+        func: taskMap[map]
+        args: KODY_CONFIG
+  for key, value of tasks
+    value.func KODY_CONFIG
+  utils.log "kody has completed your set tasks!", "silly"

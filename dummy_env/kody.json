@@ -1,33 +1,37 @@
 {
-	"set_up_git": true,
-	"write_osx_defaults": true,
-	"install_dot_files": true,
-	"set_up_brew_cask": true,
-	"brew_install": true,
-	"install_npm_modules": true,
-	"set_fish_shell_as_default": true,
-	"brew_installs": [
-		"git",
-		"mongodb",
-		"ruby-build",
-		"rbenv",
-		"fish"
-	],
-	"brew_casks": [
-		"google-chrome",
-		"heroku-toolbelt",
-		"spotify"
-	],
-	"global_npm_modules": {
-		"sike": "latest",
-		"less": "latest",
-		"jade": "latest",
-		"gulp": "latest",
-		"grunt-cli": "latest",
-		"express-generator": "latest",
-		"docpad": "latest",
-		"component": "latest",
-		"coffee-script": "latest",
-		"bower": "latest"
-	}
+  "set_up_git_config": true,
+  "set_osx_defaults": true,
+  "install_dot_files": true,
+  "install_brew_cask_and_casks": true,
+  "install_homebrew_and_packages": true,
+	"install_apm_packages": true,
+  "install_npm_modules": true,
+  "set_fish_shell_as_default": true,
+  "brew_installs": [
+    "git",
+    "mongodb",
+    "ruby-build",
+    "rbenv",
+    "fish"
+  ],
+  "brew_casks": [
+    "google-chrome",
+    "heroku-toolbelt",
+    "spotify"
+  ],
+  "apm_packages": [
+    "css-color-highlighting"
+  ],
+  "global_npm_modules": {
+    "sike": "latest",
+    "less": "latest",
+    "jade": "latest",
+    "gulp": "latest",
+    "grunt-cli": "latest",
+    "express-generator": "latest",
+    "docpad": "latest",
+    "component": "latest",
+    "coffee-script": "latest",
+    "bower": "latest"
+  }
 }

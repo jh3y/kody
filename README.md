@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/jh3y/kody.svg)](http://travis-ci.org/jh3y/kody)
+
 kody
 ===
 
@@ -34,7 +36,7 @@ As a prerequisite it's assumed you have `npm` installed as this is the one depen
 
 2. Set up your `.files` directory and necessary files (Refer to _conventions_)
 3. Tweak your `kody.json` file.
-3. Run `kody` from within your directory.
+3. Run `kody` from within your directory (if you're unsure about anything, backup your original symlinking files to be safe.)
 
 		kody
 
@@ -70,6 +72,11 @@ Defines the brew installs to run.
 Defines the brew casks to be installed.
 ###`global_npm_modules` : object
 Defines the npm modules to be installed globally along with their version.
+
+##known issue
+If you are happily using a directory with `kody` but then delete it, this will ruin your symlinks in home and you will need to set up again. It's ideal if you can back up your original config files. You can always just manually copy them into the home directory if need be or delete them and re run `kody`.
+
+I will be writing a backup option for the symlinking tasks of `kody`.
 
 ##extending
 If you're looking to extend by adding more tasks, you can get a head start with the boilerplate coffeescript file in `src/coffee/lib/tasks`.

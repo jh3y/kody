@@ -17,14 +17,14 @@ shell = require "shelljs"
 pkg = require "../../package.json"
 utils = require "../utils"
 
-exports.set_default = set_default = ()->
-	uname = shell.exec('uname -s', {silent:true})
-	if uname.output.indexOf('Darwin') isnt -1
-		found = shell.exec("find osx/set_default.*", {silent: true}).output
-		if found.indexOf("osx/set_default.*") is -1
-			utils.log "Setting Apple OSX Defaults", "prompt"
-			found = found.trim()
-			shell.exec "sh ./" + found
-			utils.log "Apple OSX defaults set", "success"
-		else
-			utils.log "No shell script file found for setting OSX Defaults", "error"
+exports.setDefault = setDefault = ()->
+  uname = shell.exec('uname -s', {silent:true})
+  if uname.output.indexOf('Darwin') isnt -1
+    found = shell.exec("find osx/set_default.*", {silent: true}).output
+    if found.indexOf("osx/set_default.*") is -1
+      utils.log "Setting Apple OSX Defaults", "prompt"
+      found = found.trim()
+      shell.exec "sh ./" + found
+      utils.log "Apple OSX defaults set", "success"
+    else
+      utils.log "No shell script file found for setting OSX Defaults", "error"

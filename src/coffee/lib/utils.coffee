@@ -17,14 +17,14 @@ pkg = require "../package.json"
 shell = require "shelljs"
 prompt = require "prompt"
 colors.setTheme
-	default: 'grey'
-	prompt: 'yellow'
-	info: 'cyan'
-	help: 'magenta'
-	warn: 'yellow'
-	error: 'red'
-	success: 'green'
-	silly: 'rainbow'
+  default: 'grey'
+  prompt: 'yellow'
+  info: 'cyan'
+  help: 'magenta'
+  warn: 'yellow'
+  error: 'red'
+  success: 'green'
+  silly: 'rainbow'
 
 exports.log = log = (msg, type = "default")->
-	console.log '[', pkg.name.cyan, ']', msg[type]
+  console.log '[', pkg.name.cyan, ']', msg[type]

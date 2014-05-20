@@ -18,17 +18,17 @@ pkg = require "../package.json"
 kody = require "./kody"
 
 program
-	.version(pkg.version)
+  .version(pkg.version)
 
 program.on "--help", ->
-	console.log "  Examples:"
-	console.log ""
-	console.log "    $ " + pkg.name 
-	return
+  console.log "  Examples:"
+  console.log ""
+  console.log "    $ " + pkg.name
+  return
 
 program.parse process.argv
 
 try
-	kody.init()
+  kody.init()
 catch err
-	console.log "[", "kody".white, "]", err.toString().red
+  console.log "[", "kody".white, "]", err.toString().red
