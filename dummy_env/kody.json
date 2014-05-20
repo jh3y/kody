@@ -4,7 +4,7 @@
   "install_dot_files": true,
   "install_brew_cask_and_casks": true,
   "install_homebrew_and_packages": true,
-	"install_apm_packages": true,
+  "install_apm_packages": true,
   "install_npm_modules": true,
   "set_fish_shell_as_default": true,
   "brew_installs": [
