@@ -20,7 +20,8 @@
     "spotify"
   ],
   "apm_packages": [
-    "css-color-highlighting"
+    "css-color-highlighting",
+    "atom-linter"
   ],
   "global_npm_modules": {
     "sike": "latest",

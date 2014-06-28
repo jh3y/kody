@@ -19,6 +19,7 @@ utils = require "../utils"
 exports.install = install = (KODY_CONFIG)->
   if shell.which("apm").trim() isnt "" and Object.keys(KODY_CONFIG.apm_packages).length > 0
     utils.log "Installing apm packages", "prompt"
-    for index, pckg of KODY_CONFIG.apm_packages
-      shell.exec "apm install " + pckg
-    utils.log "Npm modules installed globally", "success"
+    # for index, pckg of KODY_CONFIG.apm_packages
+    #   shell.exec "apm install " + pckg
+    shell.exec "apm install " + KODY_CONFIG.apm_packages.join ' '
+    utils.log "Apm modules installed globally", "success"
