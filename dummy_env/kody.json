@@ -7,7 +7,7 @@
   "install_apm_packages": false,
   "install_npm_modules": false,
   "set_fish_shell_as_default": false,
-  "remove_default_apple_apps": false,
+  "remove_default_apple_apps": true,
   "brew_installs": [
     "git",
     "mongodb",
@@ -37,6 +37,7 @@
     "bower": "latest"
   },
   "apple_apps_to_remove": [
-    "Chess.app"
+    "Chess.app",
+    "Game Center.app"
   ]
 }

@@ -20,6 +20,8 @@ utils = require '../utils'
 exports.remove = remove = (KODY_CONFIG) ->
   if KODY_CONFIG.apple_apps_to_remove and KODY_CONFIG.apple_apps_to_remove.length > 0
     [].forEach.call KODY_CONFIG.apple_apps_to_remove, (appToRemove) ->
+      regex = new RegExp " ", 'g'
+      appToRemove = appToRemove.replace regex, '\\ '
       shell.exec 'sudo rm -rf /Applications/' + appToRemove
       utils.log appToRemove + ' removed', 'info'
-  utils.log 'Default Apple applications removed', 'success'
+    utils.log 'Default Apple applications removed', 'success'
