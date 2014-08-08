@@ -25,7 +25,7 @@ _inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles)
 * Install brew cask and install other programs supported by brew cask such as Spotify, Chrome, etc.
 * Set fish shell as default shell(only worth running if you've installed fish)
 * Install Atom IDE packages
-* Remove unwanted default system applications __ * NEW! __
+* Remove unwanted default system applications __* NEW!__
 
 ##Disclaimer
 I've only used `kody` on OSX and therefore I can't say for sure how it will run on non-unix based systems etc. `kody` will essentially make symbollic links to the $HOME directory on your PATH and then runs commands from the command line that would normally be executed with bash such as `npm install`.
