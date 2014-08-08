@@ -36,7 +36,7 @@ As a prerequisite it's assumed you have `npm` installed as this is the one depen
 1. Install `kody`
 
 
-      npm install -g kody
+            npm install -g kody
 
 
 2. Set up your `kody_env`(can be named anything, mine is [here](https://github.com/jh3y/kody_env)!) directory and necessary files (Refer to [conventions](#conventions))
@@ -44,7 +44,7 @@ As a prerequisite it's assumed you have `npm` installed as this is the one depen
 4. Run `kody` from within your directory (if you're unsure about anything, backup your original symlinking files to be safe.)
 
 
-      kody
+            kody
 
 
 5. Hack away, sit back and enjoy something else taking care of env setup!
