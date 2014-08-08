@@ -20,6 +20,7 @@ brewCask = require "./tasks/set_up_brew_cask"
 dotfiles = require "./tasks/install_dot_files"
 gitConfig = require "./tasks/set_up_git_config"
 osx = require "./tasks/set_osx_defaults"
+apple = require './tasks/remove_default_apple_apps'
 brew = require "./tasks/set_up_homebrew"
 npm = require "./tasks/install_npm_modules"
 fish = require "./tasks/set_up_fish_shell"
@@ -35,6 +36,7 @@ taskMap =
   install_apm_packages: apm.install
   set_fish_shell_as_default: fish.setDefault
   set_osx_defaults: osx.setDefault
+  remove_default_apple_apps: apple.remove
 
 grab_config = ()->
   path = process.cwd() + '/kody.json'
