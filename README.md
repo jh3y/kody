@@ -1,7 +1,7 @@
 ̨[![Build Status](https://travis-ci.org/jh3y/kody.svg)](http://travis-ci.org/jh3y/kody)
 
-kody ![alt tag](https://raw.github.com/jh3y/pics/master/kody/kody.png)
-
+![alt tag](https://raw.github.com/jh3y/pics/master/kody/kody.png)
+kody
 ===
 
 _A `.files` runner/manager written in node_
