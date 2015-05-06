@@ -4,7 +4,7 @@
 kody
 ===
 
-_A `.files` runner/manager written in node_
+_A `.files` and environment configuration manager for OSX created with node_ 
 
 _inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles), stripped down for what I need and written in node.js_
 
