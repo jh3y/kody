@@ -19,7 +19,7 @@ utils = require "../utils"
 exports.install = install = (KODY_CONFIG)->
   if shell.exec("which brew", {silent: true}).output.trim() is ""
     utils.log "Attempting to intall Brew", "prompt"
-    shell.exec('ruby -e "$(curl -fsSL https://raw.github.com/Homebrew/homebrew/go/install)"')
+    shell.exec('ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"')
     utils.log "Brew installed", "success"
   else
     utils.log "Brew already installed", "warn"
