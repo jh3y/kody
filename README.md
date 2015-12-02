@@ -28,7 +28,7 @@ _inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles)
 * Remove unwanted default system applications __* NEW!__
 
 ##Disclaimer
-I've only used `kody` on OSX and therefore I can't say for sure how it will run on non-unix based systems etc. `kody` will essentially make symbollic links to the $HOME directory on your PATH and then runs commands from the command line that would normally be executed with bash such as `npm install`.
+I've only used `kody` on OSX(Up to Yosemite, haven't braved Capitan yet) and therefore I can't say for sure how it will run on non-unix based systems etc. `kody` will essentially make symbollic links to the $HOME directory on your PATH and then runs commands from the command line that would normally be executed with bash such as `npm install`.
 
 ##Installation
 As a prerequisite it's assumed you have `npm` installed as this is the one dependency for using `kody`.
