@@ -8,6 +8,10 @@
   "install_npm_modules": false,
   "set_fish_shell_as_default": false,
   "remove_default_apple_apps": true,
+  "git_credentials": {
+    "name": "jh3y",
+    "email": "jh3y@users.noreply.github.com"
+  },
   "brew_installs": [
     "git",
     "mongodb",
