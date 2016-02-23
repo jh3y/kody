@@ -3,12 +3,12 @@
   * @license MIT
   * @author author
 */
-const utils = require('../utils'),
-  options   = {
+const winston = require('winston'),
+  options     = {
     name: 'Set up A',
     description: 'sets up A for use on system',
     exec: function(resolve, reject) {
-      utils.log('setting up a .... buzz grrr ... bing');
+      winston.warn('setting up a .... buzz grrr ... bing');
       setTimeout(resolve, 5000);
     }
   };

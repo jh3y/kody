@@ -6,7 +6,6 @@
 
 const shell = require('shelljs'),
   winston   = require('winston'),
-  utils     = require('../utils'),
   PROPS     = {
     HOME_CMD   : 'echo $HOME',
     EMPTY_MSG  : 'no .files for linking.',
@@ -40,7 +39,7 @@ const shell = require('shelljs'),
           // shell.ln('-sf', source, destination);
         }
       } else {
-        utils.log(PROPS.EMPTY_MSG, 'info');
+        winston.info(PROPS.EMPTY_MSG);
       }
       resolve();
     }

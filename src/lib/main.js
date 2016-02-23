@@ -10,18 +10,44 @@ const program = require('commander'),
   colors      = require('colors'),
   winston     = require('winston'),
   pkg         = require('../package.json'),
-  utils       = require('./utils'),
-  kody        = require('./kody');
+  kody        = require('./kody'),
+  PROPS       = {
+    LOGGER_CONFIG: {
+      LEVELS: {
+        info   : 1,
+        warn   : 2,
+        error  : 3,
+        success: 4,
+        silly  : 5
+      },
+      COLORS: {
+        info   : 'blue',
+        warn   : 'yellow',
+        error  : 'red',
+        success: 'green',
+        silly  : 'rainbow'
+      }
+    }
+  };
 
 program
   .version(pkg.version);
 
-utils.setupLogger();
+winston.remove(winston.transports.Console);
+winston.add(winston.transports.Console, {
+  level    : 'silly',
+  colorize : true,
+  formatter: function (options) {
+    let color = PROPS.LOGGER_CONFIG.COLORS[options.level];
+    return `[${pkg.name.cyan}] ${options.message[color]}`;
+  }
+});
+winston.setLevels(PROPS.LOGGER_CONFIG.LEVELS);
 
 program.parse(process.argv);
 
 try {
   kody.init();
 } catch(err) {
-  utils.log(err.toString(), 'error');
+  winston.error(err.toString());
 }

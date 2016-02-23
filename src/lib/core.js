@@ -1,7 +1,7 @@
-const utils = require('./utils'),
-  defaults  = {
+const winston = require('winston'),
+  defaults    = {
     name: 'Generic task',
-    exec: e => utils.log('running', 'info')
+    exec: e => winston.info('running')
   };
 
 class KodyTask {
@@ -11,7 +11,7 @@ class KodyTask {
   }
   run() {
     return new Promise((resolve, reject) => {
-      utils.log(`Running ${this.name}`, 'info');
+      winston.info(`Running ${this.name}`);
       if (this.exec && typeof this.exec === 'function') {
         this.exec(resolve, reject);
       }

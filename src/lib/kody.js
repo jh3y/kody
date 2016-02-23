@@ -7,7 +7,7 @@ const polyfill = require('babel-polyfill'),
   shell        = require('shelljs'),
   inquirer     = require('inquirer'),
   pkg          = require('../package.json'),
-  utils        = require('./utils'),
+  winston      = require('winston'),
   fs           = require('fs'),
   task_runner  = require('./task_runner'),
   core         = require('./core'),
@@ -32,9 +32,9 @@ const polyfill = require('babel-polyfill'),
     }
   },
   welcome      = function() {
-    utils.log('==================================', 'info');
-    utils.log('kody - .files & config runner', 'info');
-    utils.log('==================================', 'info');
+    winston.info('==================================');
+    winston.info('kody - .files & config runner');
+    winston.info('==================================');
   },
   processTasks = function(tasks) {
     tasks = tasks.tasks[Symbol.iterator]();
@@ -42,12 +42,12 @@ const polyfill = require('babel-polyfill'),
       let newTask = new core.KodyTask(task.value);
       newTask.run()
         .then(() => {
-          utils.log(`Task ${newTask.name} has finished`, 'info');
+          winston.info(`Task ${newTask.name} has finished`);
           let nextTask = tasks.next();
           if (nextTask.value) {
             processTask(nextTask);
           } else {
-            utils.log('ALL TASKS FINISHED', 'silly');
+            winston.silly('ALL TASKS FINISHED');
           }
         })
         .then(() => {
