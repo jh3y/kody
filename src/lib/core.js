@@ -1,8 +1,8 @@
-const winston = require('winston'),
-  defaults    = {
-    name: 'Generic task',
-    exec: e => winston.info('running')
-  };
+const winston = require('winston');
+const defaults    = {
+  name: 'Generic task',
+  exec: () => winston.info('running')
+};
 
 class KodyTask {
   constructor(opts = defaults) {
@@ -12,9 +12,8 @@ class KodyTask {
   run() {
     return new Promise((resolve, reject) => {
       winston.info(`Running ${this.name}`);
-      if (this.exec && typeof this.exec === 'function') {
+      if (this.exec && typeof this.exec === 'function')
         this.exec(resolve, reject);
-      }
     });
   }
 }
