@@ -7,7 +7,7 @@
 const options = {
   name: 'TASK-0001',
   description: 'sets up something',
-  exec: function(resolve, reject) {
+  exec: function(resolve) { // NOTE: to reject, include reject parameter
     resolve();
   }
 };

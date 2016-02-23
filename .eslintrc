@@ -63,7 +63,6 @@
     no-trailing-spaces: 2,
     quotes: [2, "single"],
     semi: 2,
-    sort-vars: 2,
     space-before-blocks: [2, "always"],
     space-before-function-paren: [2, "never"],
     space-in-parens: [2, "never"],

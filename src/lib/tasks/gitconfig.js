@@ -11,29 +11,27 @@
   * @author jh3y
 */
 const shell  = require('shelljs'),
-  winston    = require('winston'),
   userConfig = require(process.cwd() + '/kody.json'),
+  winston    = require('winston');
+
+const PROPS = {
+    STARTER: 'git/gitconfig.starter',
+    OUTPUT : 'git/gitconfig.link'
+  },
   options = {
-    name: 'GitConfig',
+    name       : 'GitConfig',
     description: 'sets up global git configuration for symlinking',
-    /**
-      * Needs to check out what the config should be and send it over.
-    */
-    exec: function(resolve, reject) {
-      let gitCredential,
-        gitName,
-        gitEmail;
-      const uname = shell.exec('uname -s', {silent: true});
-      if (uname.output.indexOf('Darwin') !== -1) {
-        gitCredential = 'osxkeychain';
-      }
-      gitName  = userConfig.git_credentials.name;
-      gitEmail = userConfig.git_credentials.email;
+    exec       : function(resolve) {
+      const gitCredential = 'osxkeychain',
+        gitEmail = userConfig.git_credentials.email,
+        gitName = userConfig.git_credentials.name,
+        nameCmd = `-e 's/AUTHORNAME/${gitName}/g'`,
+        emailCmd = `-e 's/AUTHOREMAIL/${gitEmail}/g'`,
+        credentialCmd = `-e 's/GIT_CREDENTIAL_HELPER/${gitCredential}/g'`,
+        cG = `sed ${nameCmd} ${emailCmd} ${credentialCmd} ${PROPS.STARTER}`;
 
-      let configString = `sed -e 's/AUTHORNAME/${gitName}/g' -e 's/AUTHOREMAIL/${gitEmail}/g' -e 's/GIT_CREDENTIAL_HELPER/${gitCredential}/g' git/gitconfig.starter`;
-
-      shell.exec(configString, {silent: true})
-        .stdout.to('git/gitconfig.link');
+      shell.exec(cG, {silent: true})
+        .stdout.to(PROPS.OUTPUT);
 
       winston.warn(`GitConfig set up, ${gitName}, ${gitEmail}`);
       setTimeout(resolve, 3000);
