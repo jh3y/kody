@@ -1,46 +1,39 @@
 {
-  "set_up_git_config": false,
-  "set_osx_defaults": false,
-  "install_dot_files": false,
-  "install_brew_cask_and_casks": false,
-  "install_homebrew_and_packages": false,
-  "install_apm_packages": false,
-  "install_npm_modules": false,
-  "set_fish_shell_as_default": false,
-  "remove_default_apple_apps": true,
-  "git_credentials": {
-    "name": "jh3y",
-    "email": "jh3y@users.noreply.github.com"
+  "gitCredentials": {
+    "name": "SomeUser",
+    "email": "SomeUser@SomeEmail.com"
   },
-  "brew_installs": [
+  "brewInstalls": [
     "git",
     "mongodb",
     "ruby-build",
     "rbenv",
     "fish"
   ],
-  "brew_casks": [
+  "brewCasks": [
     "google-chrome",
     "heroku-toolbelt",
     "spotify"
   ],
-  "apm_packages": [
-    "css-color-highlighting",
-    "atom-linter"
+  "apmPackages": [
+    "css-color-underline",
+    "linter-jshint"
   ],
-  "global_npm_modules": {
-    "sike": "latest",
-    "less": "latest",
-    "jade": "latest",
-    "gulp": "latest",
-    "grunt-cli": "latest",
-    "express-generator": "latest",
-    "docpad": "latest",
-    "component": "latest",
-    "coffee-script": "latest",
-    "bower": "latest"
-  },
-  "apple_apps_to_remove": [
+  "globalNpmModules": [
+    "sike",
+    "less",
+    "jade",
+    "gulp",
+    "grunt-cli",
+    "express-generator",
+    "docpad",
+    "component",
+    "coffee-script",
+    "bower"
+  ],
+  "fishDefaultScriptPath": "fish/set_default.sh",
+  "osxDefaultScriptPath": "osx/set_default.sh",
+  "osxAppsToRemove": [
     "Chess.app",
     "Game Center.app"
   ]

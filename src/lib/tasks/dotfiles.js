@@ -17,11 +17,9 @@ const PROPS     = {
     name: 'DotFiles',
     description: 'sets up symlinks for global dotfiles',
     exec: function(resolve) {
-      // grab the home directory for the user.
       const $HOME  = shell.exec(PROPS.HOME_CMD, {
           silent: true
         }).output.trim(),
-        // grab instances, these are files/dirs suffixed with ".link"
         dotFiles = shell.find('.')
           .filter(function(file) {
             return file.match(PROPS.FILE_REGEXP);
@@ -35,9 +33,8 @@ const PROPS     = {
             basename = basename.substr(basename.lastIndexOf('/') + 1);
           basename = basename.replace(PROPS.FILE_SUFFIX, '');
           const destination = `${$HOME}/.${basename}`;
-          winston.info(`${source}`);
+          shell.ln('-sf', source, destination);
           winston.success(`linked ${basename} to ${destination}`);
-          // shell.ln('-sf', source, destination);
         }
       else
         winston.info(PROPS.EMPTY_MSG);

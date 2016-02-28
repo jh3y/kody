@@ -18,6 +18,8 @@ const core = require('./core'),
 const PROPS = {
     TASK_ORDER : [
       'gitconfig.js',
+      'homebrew.js',
+      'brewCask.js',
       '*'
     ],
     TASKS_QUERY: {
@@ -36,6 +38,7 @@ const PROPS = {
     welcome();
     let files = fs.readdirSync(__dirname + '/tasks');
     files = files.sort(sortFiles);
+    winston.info(files);
     for (const file of files) {
       const taskOpts = require(`./tasks/${file}`).options;
       const newChoice = {

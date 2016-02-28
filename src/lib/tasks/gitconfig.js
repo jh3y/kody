@@ -23,8 +23,8 @@ const PROPS = {
     description: 'sets up global git configuration for symlinking',
     exec       : function(resolve) {
       const gitCredential = 'osxkeychain',
-        gitEmail = userConfig.git_credentials.email,
-        gitName = userConfig.git_credentials.name,
+        gitEmail = userConfig.gitCredentials.email,
+        gitName = userConfig.gitCredentials.name,
         nameCmd = `-e 's/AUTHORNAME/${gitName}/g'`,
         emailCmd = `-e 's/AUTHOREMAIL/${gitEmail}/g'`,
         credentialCmd = `-e 's/GIT_CREDENTIAL_HELPER/${gitCredential}/g'`,
@@ -32,9 +32,8 @@ const PROPS = {
 
       shell.exec(cG, {silent: true})
         .stdout.to(PROPS.OUTPUT);
-
       winston.warn(`GitConfig set up, ${gitName}, ${gitEmail}`);
-      setTimeout(resolve, 3000);
+      resolve();
     }
   };
 
