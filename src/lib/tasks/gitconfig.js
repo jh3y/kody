@@ -32,7 +32,7 @@ const PROPS = {
 
       shell.exec(cG, {silent: true})
         .stdout.to(PROPS.OUTPUT);
-      winston.warn(`GitConfig set up, ${gitName}, ${gitEmail}`);
+      winston.info(`git config set for "${gitName}" with email "${gitEmail}"`);
       resolve();
     }
   };

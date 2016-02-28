@@ -5,14 +5,10 @@
   },
   "brewInstalls": [
     "git",
-    "mongodb",
-    "ruby-build",
-    "rbenv",
     "fish"
   ],
   "brewCasks": [
     "google-chrome",
-    "heroku-toolbelt",
     "spotify"
   ],
   "apmPackages": [
@@ -20,14 +16,6 @@
     "linter-jshint"
   ],
   "globalNpmModules": [
-    "sike",
-    "less",
-    "jade",
-    "gulp",
-    "grunt-cli",
-    "express-generator",
-    "docpad",
-    "component",
     "coffee-script",
     "bower"
   ],
