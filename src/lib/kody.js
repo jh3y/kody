@@ -57,7 +57,8 @@ const PROPS = {
       if (isDir && areTasks)
         files = files.concat(getTasks(`${process.cwd()}/${dir}`));
     }
-    files = files.sort(sortFiles);
+    if (rc && rc.order && rc.order.length > 0)
+      files = files.sort(sortFiles);
     for (const file of files) {
       const taskOpts = require(`${file}`).options;
       const newChoice = {
