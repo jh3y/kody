@@ -140,7 +140,10 @@ exports.options = options;
 
 
 
-##Disclaimer
+## Under the hood
+`kody` is written using `es6` with `babel` and is developed using `npm run scripts`.
+
+## Disclaimer
 I've only used `kody` on OSX(Up to Yosemite, haven't braved Capitan yet) and therefore I can't say for sure how it will run on non-unix based systems etc. `kody` will essentially make symbollic links to the $HOME directory on your PATH and then runs commands from the command line that would normally be executed with bash such as `npm install`.
 
 ===
