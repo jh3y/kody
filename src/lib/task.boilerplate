@@ -3,14 +3,10 @@
   * @license MIT
   * @author @AUTHOR
 */
-const shell   = require('shelljs'),
-  userConfig  = require(`${process.cwd()}/kody.json`),
-  winston     = require('winston');
-
 const options = {
   name: '@TITLE',
   description: '@DESCRIPTION',
-  exec: function(resolve) { // NOTE: to reject, include reject parameter
+  exec: function(resolve, reject, shell, log, config) {
     resolve();
   }
 };

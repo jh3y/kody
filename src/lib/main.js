@@ -29,8 +29,6 @@ const PROPS       = {
   }
 };
 
-program
-  .version(pkg.version);
 
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
@@ -43,7 +41,9 @@ winston.add(winston.transports.Console, {
 });
 winston.setLevels(PROPS.LOGGER_CONFIG.LEVELS);
 
-program.parse(process.argv);
+program
+  .version(pkg.version)
+  .parse(process.argv);
 
 try {
   kody.init();

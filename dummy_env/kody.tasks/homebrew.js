@@ -3,31 +3,27 @@
   * @license MIT
   * @author jh3y
 */
-const shell   = require('shelljs'),
-  userConfig  = require(`${process.cwd()}/kody.json`),
-  winston     = require('winston');
-
 const PROPS = {
     URL: 'https://raw.githubusercontent.com/Homebrew/install/master/install'
   },
   options = {
     name: 'homebrew',
     description: 'install and set up homebrew',
-    exec: function(resolve) {
+    exec: function(resolve, reject, shell, log, config) {
       const brewInstalled = shell.which('brew') !== null,
-        packages = userConfig.brewInstalls;
+        packages = config.brewInstalls;
       if (!brewInstalled) {
-        winston.info('installing Homebrew');
+        log.info('installing Homebrew');
         shell.exec(`ruby -e "$(curl -fsSL ${PROPS.URL})"`);
-        winston.success('Homebrew installed');
+        log.success('Homebrew installed');
       } else
-        winston.warn('Homebrew already installed');
+        log.warn('Homebrew already installed');
       shell.exec('brew doctor');
-      winston.warn(`NOTE: any info from brew doctor may
+      log.warn(`NOTE: any info from brew doctor may
         account for any issues with package installs`);
       if (packages.length > 0) {
         shell.exec(`brew install ${packages.join(' ')}`);
-        winston.success('brew packages installed');
+        log.success('brew packages installed');
       }
       resolve();
     }

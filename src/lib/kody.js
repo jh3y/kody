@@ -2,10 +2,12 @@
   * kody - .files manager for node
 */
 require('babel-polyfill');
-const core = require('./core'),
-  fs       = require('fs'),
+
+const fs   = require('fs'),
   inquirer = require('inquirer'),
   winston  = require('winston');
+
+let rc;
 
 /**
 * Define a task order.
@@ -16,12 +18,6 @@ const core = require('./core'),
 * Atom IDE is installed as the apm CLI won't be available.
 */
 const PROPS = {
-    TASK_ORDER : [
-      'gitconfig.js',
-      'homebrew.js',
-      'brewCask.js',
-      '*'
-    ],
     TASKS_QUERY: {
       type: 'checkbox',
       name: 'tasks',
@@ -30,17 +26,40 @@ const PROPS = {
     }
   },
   /**
-    * initializes Kody
+    * returns tasks in a given directory
     *
-    * @returns {undefined}
+    * @param {string} directory - directory to return tasks from.
+    * @returns {array} - file contents of tasks.
+  */
+  getTasks = function(directory) {
+    const tasks = fs.readdirSync(directory);
+    const addresses = [];
+    for (const task of tasks)
+      addresses.push(`${directory}/${task}`);
+    return addresses;
+  },
+  /**
+  * initializes Kody
+  *
+  * @returns {undefined}
   */
   init = function() {
     welcome();
-    let files = fs.readdirSync(__dirname + '/tasks');
+    try {
+      rc = JSON.parse(fs.readFileSync(`${process.cwd()}/.kodyrc`, 'utf-8'));
+    } catch (err) {
+      throw Error('Missing .kodyrc file.');
+    }
+    let files = getTasks(`${__dirname}/tasks`);
+    for (const dir of fs.readdirSync(process.cwd())) {
+      const isDir = fs.statSync(dir).isDirectory();
+      const areTasks = dir.indexOf('.tasks') !== -1;
+      if (isDir && areTasks)
+        files = files.concat(getTasks(`${process.cwd()}/${dir}`));
+    }
     files = files.sort(sortFiles);
-    winston.info(files);
     for (const file of files) {
-      const taskOpts = require(`./tasks/${file}`).options;
+      const taskOpts = require(`${file}`).options;
       const newChoice = {
         name: `${taskOpts.name} - ${taskOpts.description}`,
         value: taskOpts
@@ -56,6 +75,7 @@ const PROPS = {
     * @returns {undefined}
   */
   processTasks = function(tasks) {
+    const core = require('./core');
     const processTask = function(task) {
         const newTask = new core.KodyTask(task.value);
         newTask.run()
@@ -82,8 +102,8 @@ const PROPS = {
     * @returns {bool}   - used by Array.sort
   */
   sortFiles   = function(a, b) {
-    const aIndex = PROPS.TASK_ORDER.indexOf(a),
-      bIndex     = PROPS.TASK_ORDER.indexOf(b);
+    const aIndex = rc.order.indexOf(a),
+      bIndex     = rc.order.indexOf(b);
     if (bIndex !== -1 && aIndex !== -1 && aIndex < bIndex)
       return -1;
     if (aIndex !== -1 || bIndex !== -1)
@@ -95,9 +115,9 @@ const PROPS = {
     * @returns {undefined}
   */
   welcome      = function() {
-    winston.info('==================================');
-    winston.info('kody - .files & config runner');
-    winston.info('==================================');
+    winston.info('===================================');
+    winston.info('   kody - .files & config runner   ');
+    winston.info('===================================');
   };
 
 exports.init = init;

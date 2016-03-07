@@ -3,25 +3,21 @@
   * @license MIT
   * @author jh3y
 */
-const shell   = require('shelljs'),
-  userConfig  = require(`${process.cwd()}/kody.json`),
-  winston     = require('winston');
-
 const options = {
   name: 'Remove OSX apps',
   description: 'removes unwanted default OSX apps',
-  exec: function(resolve) {
+  exec: function(resolve, reject, shell, log, config) {
     const space = new RegExp(' ', 'g');
-    const apps = userConfig.osxAppsToRemove;
+    const apps = config.osxAppsToRemove;
     if (apps && apps.length > 0) {
       for (const app of apps) {
         const sanitizedApp = app.replace(space, '\\ ');
         shell.exec(`sudo rm -rf /Applications/${sanitizedApp}`);
-        winston.info(`${sanitizedApp} removed from system`);
+        log.info(`${sanitizedApp} removed from system`);
       }
-      winston.success('default OSX applications removed');
+      log.success('default OSX applications removed');
     } else
-      winston.info('no apps to remove');
+      log.info('no apps to remove');
     resolve();
   }
 };

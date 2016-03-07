@@ -1,4 +1,9 @@
 {
+  "order": [
+    "homebrew.js",
+    "brewCask.js",
+    "*"
+  ],
   "gitCredentials": {
     "name": "SomeUser",
     "email": "SomeUser@SomeEmail.com"

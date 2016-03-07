@@ -10,10 +10,6 @@
   * @license MIT
   * @author jh3y
 */
-const shell  = require('shelljs'),
-  userConfig = require(process.cwd() + '/kody.json'),
-  winston    = require('winston');
-
 const PROPS = {
     STARTER: 'git/gitconfig.starter',
     OUTPUT : 'git/gitconfig.link'
@@ -21,10 +17,10 @@ const PROPS = {
   options = {
     name       : 'GitConfig',
     description: 'sets up global git configuration for symlinking',
-    exec       : function(resolve) {
+    exec       : function(resolve, reject, shell, log, config) {
       const gitCredential = 'osxkeychain',
-        gitEmail = userConfig.gitCredentials.email,
-        gitName = userConfig.gitCredentials.name,
+        gitEmail = config.gitCredentials.email,
+        gitName = config.gitCredentials.name,
         nameCmd = `-e 's/AUTHORNAME/${gitName}/g'`,
         emailCmd = `-e 's/AUTHOREMAIL/${gitEmail}/g'`,
         credentialCmd = `-e 's/GIT_CREDENTIAL_HELPER/${gitCredential}/g'`,
@@ -32,7 +28,7 @@ const PROPS = {
 
       shell.exec(cG, {silent: true})
         .stdout.to(PROPS.OUTPUT);
-      winston.info(`git config set for "${gitName}" with email "${gitEmail}"`);
+      log.info(`git config set for "${gitName}" with email "${gitEmail}"`);
       resolve();
     }
   };
