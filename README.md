@@ -1,124 +1,153 @@
-̨[![Build Status](https://travis-ci.org/jh3y/kody.svg)](http://travis-ci.org/jh3y/kody)
+[![Build Status](https://travis-ci.org/jh3y/kody.svg)](http://travis-ci.org/jh3y/kody)
+![img](https://img.shields.io/badge/version-1.0.0-000000.svg)
+![img](https://img.shields.io/badge/language-JS-9a12b3.svg)
+![img](https://img.shields.io/badge/license-MIT-22a7f0.svg)
 
 ![alt tag](https://raw.github.com/jh3y/pics/master/kody/kody.png)
 kody
 ===
 
-_A `.files` and environment configuration manager for OSX created with node_ 
+_An interactive `.files` and environment configuration CLI tool for OSX, created with node_
 
-_inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles), stripped down for what I need and written in node.js_
+_inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles), stripped down and written in node.js_
 
-`kody` is a command line tool that helps you maintain your .files/configurations/installations etc.
-
-* One command will take care of things.
+* One command
 * No restrictions on where you run from or store you symlink files.
 * Easy to extend and tweak.
-* Set what tasks you want to run and packages you want to install from one config file.
-* just needs `node` and your configuration.
+* Interactive CLI that prompts which tasks you want to run.
+* Just needs `node` and your configuration.
 
-##Current implemented tasks
+`kody` is essentially a task runner. It comes with one task that will symlink your .files to your `$HOME` directory. Anything else is defined by your own configuration.
 
+## Installation
+You'll need to install `node/npm` first as this is a dependency of `kody`.
+
+1. Install `kody`
+```shell
+npm install -g kody
+```
+2. Set up your `kody_env`(can be named anything, mine is [here](https://github.com/jh3y/kody_env)!) directory and necessary files (Refer to [usage](#Usage))
+3. Run `kody` from within your directory (if you're unsure about anything, backup your original symlinking files to be safe.)
+```shell
+kody
+```
+4. Enjoy not having to manually do everything to set up your machine :smile:!
+
+
+## Usage
+In order to use `kody` you'll need to set up a `kody` configuration directory containing a `.kodyrc` file.
+
+Start out with the `dummy_env` directory as a starting point and extend from there if you get stuck. It's what I created my own `kody_env` from and does work.
+
+### Symlinking
+`kody` comes with a default task for symlinking files to your `$HOME` directory. The only requirement is that you suffix any files/directories with `.link` in order for those files/directories to be symlinked.
+
+For example; a `kody` configuration directory containing a directory named `atom.link` would be symlinked to `.atom`.
+```js
+WHEREVER/atom.link -> $HOME/.atom
+```
+
+### .kodyrc file
+The `.kodyrc` file is used to define variables that will be used by tasks that you define in your configuration. It will also define the order of any defined tasks.
+#### An example
+```json
+{
+  "order": [
+    "a.js",
+    "b.js",
+    "*"
+  ],
+  "brewInstalls": [
+    "git",
+    "fish"
+  ],
+  "globalNpmModules": [
+    "coffee-script",
+    "bower"
+  ]
+}
+```
+The `order` key is the only key that is defined by `kody` and required if you need some tasks to run before others. In this example; `a` will run before `b`. A real example would be maybe say making sure `homebrew` would be installed before `brew cask` could be ran.
+
+Any other keys in the `.kodyrc` file are purely user defined and made available in any tasks you write/use. For example; you could use an array with key `globalNpmModules` to define a set of global npm modules to install on your machine.
+
+### Creating tasks
+Defining tasks for `kody` to run is what automates your machine setup.
+`kody` will automatically pick up any `.js` files within directories that contain `.tasks` in their name. For example; `kody.tasks/`.
+
+A symlinking task is included with `kody`. The rest is your imagination.
+
+The task boilerplate is as follows;
+
+```js
+const options = {
+  name: 'Task A',
+  description: 'A task that does something',
+  exec: function(resolve, reject, shell, log, config) {
+    // Do some stuff then resolve it.
+    resolve();
+  }
+};
+
+exports.options = options;
+```
+Tasks are defined by exporting an options object from `.js` files. You define `name`, `description` and `exec`.
+
+* `name {string}` - defines a task name to be used by `kody`.
+* `description {string}` - defines a description for a task.
+* `exec {function}` - defines a function that will be run by `kody`. The parameters are important. You can name them whatever you want. The `resolve/reject` function must be invoked in order for the task to finish as `kody` relies on `Promises` to run through tasks. `shell` gives you access to the `shelljs` API. `log` gives you access to `kody`'s instance of `winston` logger. Lastly, `config` gives you access to the `.kodyrc` config object.
+
+#### An example task
+For an example task, let's install `Homebrew`, the package manager for `OSX`.
+
+```js
+const PROPS = {
+    URL: 'https://raw.githubusercontent.com/Homebrew/install/master/install'
+  },
+  options = {
+    name: 'homebrew',
+    description: 'install and set up homebrew',
+    exec: function(resolve, reject, shell, log, config) {
+      const brewInstalled = shell.which('brew') !== null,
+        packages = config.brewInstalls;
+      if (!brewInstalled) {
+        log.info('installing Homebrew');
+        shell.exec(`ruby -e "$(curl -fsSL ${PROPS.URL})"`);
+        log.success('Homebrew installed');
+      } else
+        log.warn('Homebrew already installed');
+      shell.exec('brew doctor');
+      log.warn(`NOTE: any info from brew doctor may
+        account for any issues with package installs`);
+      if (packages.length > 0) {
+        shell.exec(`brew install ${packages.join(' ')}`);
+        log.success('brew packages installed');
+      }
+      resolve();
+    }
+  };
+
+exports.options = options;
+```
+#### Tasks that have already been written
 * set up git
-* symlink config files to home directory
 * write OSX defaults
 * Install and set up Homebrew
 * Install brew cask and install other programs supported by brew cask such as Spotify, Chrome, etc.
-* Set fish shell as default shell(only worth running if you've installed fish)
+* Set up fish shell
 * Install Atom IDE packages
-* Remove unwanted default system applications __* NEW!__
+* Remove unwanted default system applications
 
-##Disclaimer
+
+
+## Under the hood
+`kody` is written using `es6` with `babel` and is developed using `npm run scripts`.
+
+## Disclaimer
 I've only used `kody` on OSX(Up to Yosemite, haven't braved Capitan yet) and therefore I can't say for sure how it will run on non-unix based systems etc. `kody` will essentially make symbollic links to the $HOME directory on your PATH and then runs commands from the command line that would normally be executed with bash such as `npm install`.
 
-##Installation
-As a prerequisite it's assumed you have `npm` installed as this is the one dependency for using `kody`.
+===
 
-1. Install `kody`
+Any problems or questions, feel free to post an issue or tweet me, [@_jh3y](https://twitter.com/@_jh3y)!
 
-
-            npm install -g kody
-
-
-2. Set up your `kody_env`(can be named anything, mine is [here](https://github.com/jh3y/kody_env)!) directory and necessary files (Refer to [conventions](#conventions))
-3. Tweak your `kody.json` file.
-4. Run `kody` from within your directory (if you're unsure about anything, backup your original symlinking files to be safe.)
-
-
-            kody
-
-
-5. Hack away, sit back and enjoy something else taking care of env setup!
-
-##Conventions
-###Naming conventions for symlinking
-For the symlinking task in `kody` there is only one thing to remember, suffix(?) `.link` to the end of either the directory you wish to symlink or the file you wish to symlink from within the directory you're working in. See the `dummy_env` folder for an example setup.
-###Start from the boilerplate
-Start out with the `dummy_env` directory as a starting point and extend from there if you get stuck. It's what I use to develop against so will work and is an easy place to start from.
-
-
-##kody.json
-In order for `kody` to run, you need a `kody.json` file in place within the directory where your config lies. In here you can modify different options to tweak what tasks you want to run, what packages you wish to install etc.
-
-Refer to the `kody.json` file within the `dummy_env` folder if you get stuck.
-
-The options so far, are as follows;
-
-###`set_up_git_config` : true/false
-Set whether the git credential task runner should be run.
-###`set_osx_defaults` : true/false
-Set whether to run the Apple OSX Defaults option writer.
-###`install_dot_files` : true/false
-Set whether to run symlinking task,
-###`install_brew_cask_and_casks` : true/false
-Set whether the brew cask set up task will be run along with the installation of brew casks defined in `brew_casks`.
-###`install_homebrew_and_packages` : true/false
-Set whether Homebrew installation task is run.
-###`install_npm_modules` : true/false
-Set whether global npm modules are installed that are defined within `global_npm_modules`
-###`remove_default_apple_apps` : true/false
-Set whether `kody` should remove defined default applications that are unwanted.
-###`install_apm_packages` : true/false
-Set whether Atom IDE packages are installed that are defined within `apm_packages`.
-###`set_fish_shell_as_default` : true/false
-Set whether the shell script for setting fish as the default shell should be run.
-###`brew_installs` : true/false
-Defines the brew installs to run.
-###`brew_casks` : string array
-Defines the brew casks to be installed.
-###`apple_apps_to_remove`: string array
-Defines the default apple installed applications to be removed.
-###`apm_packages`: string array
-Defines the atom IDE packages to be installed.
-###`global_npm_modules` : object
-Defines the npm modules to be installed globally along with their version.
-
-##Known issues
-* If you are happily using a directory with `kody` but then delete it, this will ruin your symlinks in home and you will need to set up again. It's ideal if you can back up your original config files. You can always just manually copy them into the home directory if need be or delete them and run `kody`.
-
-  I will be writing a backup option for the symlinking tasks of `kody`.
-
-* Not so much an issue but an improvement, but it would be nice to call the individual tasks out. For example,
-
-
-      kody install_apm_packages
-
-
-##Extending
-If you're looking to extend by adding more tasks, you can get a head start with the boilerplate coffeescript file in `src/coffee/lib/tasks`.
-`kody` has been written in coffeescript and uses `gulp` for coffee compilation and watching. If you want to extend and develop `kody` you'll need to get `gulp` installed too.
-
-The structure of the repo should be relatively easy to become familiar with and I've included a boilerplate task file within the tasks directory. The main concern when developing is creating your own task file and then integrating it into `task_runner.coffee` and setting new configuration keys to test it out within `kody.json`.
-
-
-##Contributing
-Feel free to get involved and give me some pointers on what could be improved.
-
-Refer to __extending__ above and fork the repo.
-
-I look forward to any potential pull requests!
-
-##Support
-
-Any problems or questions, feel free to post an issue or tweet me, @_jh3y!
-
-@jh3y 2014
+@jh3y 2016

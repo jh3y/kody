@@ -1,15 +1,14 @@
-var assert, kody;
+'use strict';
 
-assert = require("assert");
+var assert = require('assert'),
+    kody = require('../lib/kody');
 
-kody = require("../lib/kody");
-
-suite("kody", function() {
-  return suite("run", function() {
-    return test("kody should throw an error if there's no config file", function() {
-      return assert.throws((function() {
-        return kody.init();
-      }), Error);
+suite('kody', function () {
+  suite('run', function () {
+    test('should throw error if no config file present', function () {
+      assert.throws(function () {
+        kody.init();
+      }, Error);
     });
   });
 });

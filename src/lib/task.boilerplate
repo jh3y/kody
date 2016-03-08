@@ -1,0 +1,14 @@
+/**
+  * @TITLE - @DESCRIPTION
+  * @license MIT
+  * @author @AUTHOR
+*/
+const options = {
+  name: '@TITLE',
+  description: '@DESCRIPTION',
+  exec: function(resolve, reject, shell, log, config) {
+    resolve();
+  }
+};
+
+exports.options = options;
