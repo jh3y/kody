@@ -1,21 +1,21 @@
 [![Build Status](https://travis-ci.org/jh3y/kody.svg)](http://travis-ci.org/jh3y/kody)
+![img](https://img.shields.io/badge/version-1.0.0-000000.svg)
+![img](https://img.shields.io/badge/language-JS-9a12b3.svg)
+![img](https://img.shields.io/badge/license-MIT-22a7f0.svg)
 
 ![alt tag](https://raw.github.com/jh3y/pics/master/kody/kody.png)
 kody
 ===
 
-_A `.files` and environment configuration manager for OSX created with node_
+_An interactive `.files` and environment configuration CLI tool for OSX, created with node_
 
 _inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles), stripped down and written in node.js_
 
-`kody` is a command line tool that helps you maintain your .files/configurations/installations etc.
-
-* One command to take care of all the thingz!
+* One command
 * No restrictions on where you run from or store you symlink files.
 * Easy to extend and tweak.
 * Interactive CLI that prompts which tasks you want to run.
-* Just needs `node` and your configuration files.
-
+* Just needs `node` and your configuration.
 
 `kody` is essentially a task runner. It comes with one task that will symlink your .files to your `$HOME` directory. Anything else is defined by your own configuration.
 
