@@ -98,13 +98,15 @@ const PROPS = {
   /**
     * used to sort ordering of task files based on desire.
     *
-    * @param {string} a - string representing task filename
-    * @param {string} b - string representing task filename
+    * @param {string} a - string representing task filepath
+    * @param {string} b - string representing task filepath
     * @returns {bool}   - used by Array.sort
   */
   sortFiles   = function(a, b) {
-    const aIndex = rc.order.indexOf(a),
-      bIndex     = rc.order.indexOf(b);
+    const taskA = a.substring(a.lastIndexOf('/') + 1),
+      taskB     = b.substring(b.lastIndexOf('/') + 1),
+      aIndex    = rc.order.indexOf(taskA),
+      bIndex    = rc.order.indexOf(taskB);
     if (bIndex !== -1 && aIndex !== -1 && aIndex < bIndex)
       return -1;
     if (aIndex !== -1 || bIndex !== -1)
