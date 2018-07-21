@@ -1,26 +1,27 @@
-const fs = require('fs'),
-  winston = require('winston'),
-  shell = require('shelljs');
+/**
+ * kody - dotfiles manager in node!
+ * @author jh3y - 2018
+ * @license MIT
+ */
 
-const rc = JSON.parse(fs.readFileSync(`${process.cwd()}/.kodyrc`, 'utf-8'));
-
-const defaults    = {
-  name: 'Generic task',
-  exec: () => winston.info('running')
-};
-
-class KodyTask {
-  constructor(opts = defaults) {
-    this.name = opts.name;
-    this.exec = opts.exec;
+import shell from 'shelljs'
+import ora from 'ora'
+import log, { detail } from './log'
+const { info } = console
+class Task {
+  constructor(opts) {
+    this.name = opts.name
+    this.exec = opts.exec
+    this.config = opts.config
   }
   run() {
+    const { config, exec, name } = this
     return new Promise((resolve, reject) => {
-      winston.info(`Running ${this.name}`);
-      if (this.exec && typeof this.exec === 'function')
-        this.exec(resolve, reject, shell, winston, rc);
-    });
+      info(detail(`Running ${name}`))
+      if (exec && typeof exec === 'function')
+        exec(resolve, reject, shell, config, log, ora)
+    })
   }
 }
 
-exports.KodyTask = KodyTask;
+module.exports = Task

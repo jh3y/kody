@@ -1,126 +1,192 @@
 /**
-  * kody - .files manager for node
-*/
-require('babel-polyfill');
+ * kody - dotfiles manager in node!
+ * @author jh3y - 2018
+ * @license MIT
+ */
 
-const fs   = require('fs'),
-  inquirer = require('inquirer'),
-  winston  = require('winston');
-
-let rc;
-
-/**
-* Define a task order.
-* This is useful for when you wish one task to run before
-* another.
-*
-* For example; there is no use installing apm modules before
-* Atom IDE is installed as the apm CLI won't be available.
-*/
-const PROPS = {
-    TASKS_QUERY: {
+import { statSync, readFileSync, readdirSync } from 'fs'
+import inquirer from 'inquirer'
+import { find } from 'shelljs'
+import { basename, extname, resolve } from 'path'
+import ora from 'ora'
+import log, { detail, fail, success, successBg, warning } from './log'
+import pkg from '../package.json'
+import Task from './core'
+/* eslint-disable-next-line no-unused-vars */
+import regeneratorRuntime from 'regenerator-runtime'
+const { error, info, warn } = console
+const cwd = process.cwd()
+class Kody {
+  config = undefined
+  /**
+   * sort tasks based on desired running order
+   *
+   * @param { Array } tasks - list of task paths
+   * @param { Array } order - defined running order represented as an Array
+   */
+  sortTasks = (tasks, order) => {
+    const result = tasks.sort((a, b) => {
+      const taskA = basename(a, '.js')
+      const taskB = basename(b, '.js')
+      const aIndex = order.indexOf(taskA)
+      const bIndex = order.indexOf(taskB)
+      let result = 0
+      if (
+        (aIndex !== -1 && bIndex === -1) ||
+        (aIndex !== -1 && bIndex !== -1 && aIndex < bIndex)
+      )
+        result = -1
+      if (
+        (aIndex === -1 && bIndex !== -1) ||
+        (aIndex !== -1 && bIndex !== -1 && bIndex < aIndex)
+      )
+        result = 1
+      return result
+    })
+    return result
+  }
+  /**
+   * get tasks under specified directory
+   *
+   * @param { String } dir - directory to look for tasks
+   * @returns { Array } - array of task file paths
+   */
+  getTasks = dir => {
+    const tasks = readdirSync(dir)
+    let paths = []
+    for (const task of tasks) {
+      const p = `${dir}/${task}`
+      const isDir = statSync(p).isDirectory()
+      // Only accept files that have the .js extension
+      // Or go deeper into directories
+      if (!isDir && extname(p) === '.js') {
+        paths.push(p)
+      } else if (isDir) {
+        paths = paths.concat(this.getTasks(p))
+      }
+    }
+    return paths
+  }
+  /**
+   * loops through task objects and runs them
+   *
+   * @param {Array} tasks - Array of task objects to be processed
+   */
+  processTasks = async tasks => {
+    const { config } = this
+    const tasksToProcess = tasks[Symbol.iterator]()
+    const init = async task => {
+      try {
+        await processTask(task)
+      } catch (err) {
+        error(fail(err.message))
+      }
+    }
+    /**
+     * Recursive asynchronous function for processing each task
+     *
+     * @param { Object } task - task object detailing exec function etc.
+     */
+    const processTask = async task => {
+      const newTask = new Task({ ...task.value, config })
+      try {
+        await newTask.run()
+        info(success(`Task ${newTask.name} has finished`))
+        const nextTask = tasksToProcess.next()
+        if (nextTask.value) {
+          init(nextTask)
+        } else {
+          info(success('All tasks have finished 🎉'))
+        }
+      } catch (err) {
+        throw new Error(
+          `There was an issue running ${newTask.name} 👎 : ${err.message}`
+        )
+      }
+    }
+    init(tasksToProcess.next())
+  }
+  init = () => {
+    const loader = ora(`Searching ${cwd} for .kodyrc file`).start()
+    try {
+      const configPath = find('.').filter(f => f.match(/\.kodyrc$/))
+      const configFile = readFileSync(configPath[0], 'utf-8')
+      loader.stop()
+      this.config = JSON.parse(configFile)
+    } catch (err) {
+      loader.stop()
+      warn(warning('⚠️  No .kodyrc file found - will attempt to run any tasks'))
+    }
+  }
+  prompt = async () => {
+    const { config, getTasks, processTasks, sortTasks } = this
+    let taskDirectory
+    let runningOrder
+    if (config) {
+      taskDirectory = config.task_directory
+      runningOrder = config.running_order
+    }
+    let taskDir = `${cwd}/kody.tasks`
+    if (taskDirectory) taskDir = resolve(taskDirectory)
+    let userTasks = []
+    try {
+      userTasks = getTasks(taskDir)
+    } catch (err) {
+      warn(
+        warning('⚠️  No user tasks defined - will attempt to run dotfiles task')
+      )
+    }
+    let tasks = [`${__dirname}/dotfiles.js`, ...userTasks]
+    if (runningOrder && runningOrder.length)
+      tasks = sortTasks(tasks, runningOrder)
+    const inquirerConfig = {
       type: 'checkbox',
       name: 'tasks',
-      message: 'Choose the set up tasks you wish to run',
-      choices: []
+      message: 'Choose the tasks you wish to run',
+      choices: [],
     }
-  },
-  /**
-    * returns tasks in a given directory
-    *
-    * @param {string} directory - directory to return tasks from.
-    * @returns {array} - file contents of tasks.
-  */
-  getTasks = function(directory) {
-    const tasks = fs.readdirSync(directory);
-    const addresses = [];
-    for (const task of tasks)
-      addresses.push(`${directory}/${task}`);
-    return addresses;
-  },
-  /**
-  * initializes Kody
-  *
-  * @returns {undefined}
-  */
-  init = function() {
-    welcome();
-    try {
-      rc = JSON.parse(fs.readFileSync(`${process.cwd()}/.kodyrc`, 'utf-8'));
-    } catch (err) {
-      throw Error('Missing .kodyrc file.');
-    }
-    let files = getTasks(`${__dirname}/tasks`);
-    for (const dir of fs.readdirSync(process.cwd())) {
-      const isDir = fs.statSync(dir).isDirectory();
-      const areTasks = dir.indexOf('.tasks') !== -1;
-      if (isDir && areTasks)
-        files = files.concat(getTasks(`${process.cwd()}/${dir}`));
-    }
-    if (rc && rc.order && rc.order.length > 0)
-      files = files.sort(sortFiles);
-    for (const file of files) {
-      const taskOpts = require(`${file}`).options;
-      const newChoice = {
-        name: `${taskOpts.name} - ${taskOpts.description}`,
-        value: taskOpts
-      };
-      PROPS.TASKS_QUERY.choices.push(newChoice);
-    }
-    inquirer.prompt(PROPS.TASKS_QUERY, processTasks);
-  },
-  /**
-    * loops through task objects and runs them
-    *
-    * @param {KodyTask[]} tasks - Array of KodyTask objects to be processed
-    * @returns {undefined}
-  */
-  processTasks = function(tasks) {
-    const core = require('./core');
-    const processTask = function(task) {
-        const newTask = new core.KodyTask(task.value);
-        newTask.run()
-          .then(() => {
-            winston.info(`Task ${newTask.name} has finished`);
-            const nextTask = tasksToProcess.next();
-            if (nextTask.value)
-              processTask(nextTask);
-            else
-              winston.silly('ALL TASKS FINISHED');
+    for (const task of tasks) {
+      try {
+        const value = require(`${task}`)
+        const { name, exec, description } = value
+        if (name && exec) {
+          inquirerConfig.choices.push({
+            name: `${name} - ${description}`,
+            value,
           })
-          .then(() => {
-            throw new Error('Something went wrong');
-          });
-      },
-      tasksToProcess = tasks.tasks[Symbol.iterator]();
-    processTask(tasksToProcess.next());
-  },
+        }
+      } catch (err) {
+        throw new Error(`Invalid task file - ${err}`)
+      }
+    }
+    const selection = await inquirer.prompt(inquirerConfig)
+    if (selection.tasks.length) processTasks(selection.tasks)
+    else info(detail('No tasks selected, see ya! 👋'))
+  }
   /**
-    * used to sort ordering of task files based on desire.
-    *
-    * @param {string} a - string representing task filepath
-    * @param {string} b - string representing task filepath
-    * @returns {bool}   - used by Array.sort
-  */
-  sortFiles   = function(a, b) {
-    const taskA = a.substring(a.lastIndexOf('/') + 1),
-      taskB     = b.substring(b.lastIndexOf('/') + 1),
-      aIndex    = rc.order.indexOf(taskA),
-      bIndex    = rc.order.indexOf(taskB);
-    if (bIndex !== -1 && aIndex !== -1 && aIndex < bIndex)
-      return -1;
-    if (aIndex !== -1 || bIndex !== -1)
-      return 1;
-  },
-  /**
-    * welcome msg for user
-    *
-    * @returns {undefined}
-  */
-  welcome      = function() {
-    winston.info('===================================');
-    winston.info('   kody - .files & config runner   ');
-    winston.info('===================================');
-  };
+   * loops through task objects and runs them
+   *
+   * @param {Array} tasks - Array of task objects to be processed
+   */
+  welcome = () => {
+    info(
+      log(
+        `
+                  _____      ____
+                  |   |______|  |
+                  |  • _____ •  |
+                  |   |_____|   |
+                  |             |
+                  |_____________|
 
-exports.init = init;
+      ----------------------------------------
+        kody v${pkg.version} - .files & config runner
+      ----------------------------------------
+    `,
+        successBg,
+        'transparent'
+      )
+    )
+  }
+}
+export default Kody

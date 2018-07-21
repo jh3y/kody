@@ -1,52 +1,25 @@
 /**
-  * kody - a .files manager
-  *
-  * @author jh3y 2016
-  * @license MIT
-*/
-require('colors');
-const kody   = require('./kody'),
-  pkg        = require('../package.json'),
-  program    = require('commander'),
-  winston    = require('winston');
+ * kody - dotfiles manager in node!
+ * @author jh3y - 2018
+ * @license MIT
+ */
 
-const PROPS       = {
-  LOGGER_CONFIG: {
-    LEVELS: {
-      info   : 1,
-      warn   : 2,
-      error  : 3,
-      success: 4,
-      silly  : 5
-    },
-    COLORS: {
-      info   : 'blue',
-      warn   : 'yellow',
-      error  : 'red',
-      success: 'green',
-      silly  : 'rainbow'
-    }
+import program from 'commander'
+/* eslint-disable-next-line no-unused-vars */
+import regeneratorRuntime from 'regenerator-runtime'
+import { fail } from './log'
+import pkg from '../package.json'
+import Kody from './kody'
+const { error } = console
+program.version(pkg.version).parse(process.argv)
+const main = async () => {
+  try {
+    const instance = new Kody()
+    instance.welcome()
+    instance.init()
+    await instance.prompt()
+  } catch (err) {
+    error(fail(err.toString()))
   }
-};
-
-
-winston.remove(winston.transports.Console);
-winston.add(winston.transports.Console, {
-  level    : 'silly',
-  colorize : true,
-  formatter: function(options) {
-    const color = PROPS.LOGGER_CONFIG.COLORS[options.level];
-    return `[${pkg.name.cyan}] ${options.message[color]}`;
-  }
-});
-winston.setLevels(PROPS.LOGGER_CONFIG.LEVELS);
-
-program
-  .version(pkg.version)
-  .parse(process.argv);
-
-try {
-  kody.init();
-} catch (err) {
-  winston.error(err.toString());
 }
+main()

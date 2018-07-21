@@ -1,153 +1,238 @@
+[![NPM](https://nodei.co/npm/kody.png?downloads=true&downloadRank=true&stars=true)](https://github.com/jh3y/kody)
+
 [![Build Status](https://travis-ci.org/jh3y/kody.svg)](http://travis-ci.org/jh3y/kody)
-![img](https://img.shields.io/badge/version-1.0.0-000000.svg)
+![img](https://img.shields.io/badge/version-2.0.0-000000.svg)
 ![img](https://img.shields.io/badge/language-JS-9a12b3.svg)
 ![img](https://img.shields.io/badge/license-MIT-22a7f0.svg)
 
+# kody
 ![alt tag](https://raw.github.com/jh3y/pics/master/kody/kody.png)
-kody
-===
 
-_An interactive `.files` and environment configuration CLI tool for OSX, created with node_
 
-_inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles), stripped down and written in node.js_
+## _An interactive `.files` and environment configuration tool created with node_
+
+_Inspired by Zach Holmans popular [dotfiles](https://github.com/holman/dotfiles), stripped down and written in node_
 
 * One command
-* No restrictions on where you run from or store you symlink files.
-* Easy to extend and tweak.
-* Interactive CLI that prompts which tasks you want to run.
-* Just needs `node` and your configuration.
+* No restrictions on where you run from or store your dotfiles
+* Easy to configure, extend and tweak
+* Interactive CLI that prompts which tasks you want to run
+* Just needs `node` and your dotfiles!
 
-`kody` is essentially a task runner. It comes with one task that will symlink your .files to your `$HOME` directory. Anything else is defined by your own configuration.
+![alt tag](https://raw.github.com/jh3y/pics/master/kody/basic-tasks.gif)
+
+## Index
+
+* [What is kody?](https://github.com/jh3y/kody#what-is-kody)
+* [What else would I use it for?](https://github.com/jh3y/kody#what-else-would-i-use-it-for)
+* [Installation](https://github.com/jh3y/kody#installation)
+* [Usage](https://github.com/jh3y/kody#usage)
+  * [Installing dotfiles](https://github.com/jh3y/kody#installing-dotfiles)
+  * [Tasks](https://github.com/jh3y/kody#tasks)
+    * [Hello World!](https://github.com/jh3y/kody#hello-world)
+  * [.kodyrc file](https://github.com/jh3y/kody#.kodyrc-file)
+    * [An example .kodyrc file](https://github.com/jh3y/kody#an-example-.kodyrc-file)
+  * [A real task](https://github.com/jh3y/kody#a-real-task)
+  * [Tasks that have already been created](https://github.com/jh3y/kody#tasks-that-have-already-been-created)
+* [Examples](https://github.com/jh3y/kody#examples)
+* [Development](https://github.com/jh3y/kody#development)
+* [Under the hood](https://github.com/jh3y/kody#under-the-hood)
+* [Disclaimer](https://github.com/jh3y/kody#disclaimer)
+* [Contributing](https://github.com/jh3y/kody#contributing)
+
+## What is kody
+`kody` is more than a dotfiles installer. Out of the box, it can handle symlinking your version controlled files to a desired directory. It will also backup your originals if you wish 👍
+
+But it can do much more! And it's up to you how creative you want to get 🐻
+
+You create some tasks to set up your machine, run `kody`, and `kody` will go ahead and run the tasks you tell it to!
+
+## What else would I use it for
+You can use `kody` to automate most things.
+
+For example, fed up of installing a bunch of apps when you set up a machine? Create a small task to install `homebrew`, configure a list of apps you want and tell `kody` to do it for you! 😉
+
+Or how about automating your shell configuration or IDE set up! They can be time consuming 😅
+
+You can see some examples in the `examples` section below 👍
 
 ## Installation
 You'll need to install `node/npm` first as this is a dependency of `kody`.
-
-1. Install `kody`
+Then, install `kody` globally 👍
 ```shell
-npm install -g kody
+npm i -g kody
 ```
-2. Set up your `kody_env`(can be named anything, mine is [here](https://github.com/jh3y/kody_env)!) directory and necessary files (Refer to [usage](#Usage))
-3. Run `kody` from within your directory (if you're unsure about anything, backup your original symlinking files to be safe.)
-```shell
-kody
-```
-4. Enjoy not having to manually do everything to set up your machine :smile:!
-
 
 ## Usage
-In order to use `kody` you'll need to set up a `kody` configuration directory containing a `.kodyrc` file.
+### Installing Dotfiles
+Out of the box, `kody` comes with dotfile installation. `kody` will symlink your version controlled dotfiles to a directory of your choosing. The default is `$HOME`.
 
-Start out with the `dummy_env` directory as a starting point and extend from there if you get stuck. It's what I created my own `kody_env` from and does work.
+`kody` needs to know which files to symlink. So any files or directories you wish to symlink should have the suffix `.link`.
 
-### Symlinking
-`kody` comes with a default task for symlinking files to your `$HOME` directory. The only requirement is that you suffix any files/directories with `.link` in order for those files/directories to be symlinked.
+For example; I want to install a dotfile for a `.gitignore` file. Rename your version controlled `.gitignore` to `.gitignore.link` and then run `kody` in that directory. The same works for directories if you want to symlink the contents of a directory.
 
-For example; a `kody` configuration directory containing a directory named `atom.link` would be symlinked to `.atom`.
-```js
-WHEREVER/atom.link -> $HOME/.atom
+```shell
+/my/version/controlled/dotfiles/repo/.gitignore.link -> $HOME/.gitignore
 ```
 
+`kody` will also prompt you to see if you'd like to backup your original dotfiles. It will backup the original to the same destination with the `.bak` suffix.
+
+That's all you need to manage and install your dotfiles 💪
+
+### Tasks
+Now the fun starts! 😉
+
+You can also use kody to automate various defined tasks.
+
+Let's start with the basics.
+
+By default, all tasks live inside a `kody.tasks` directory. You can configure this (we will get to that). kody will search the directory for all the JavaScript files it can find. You can nest tasks.
+
+Each task file exposes an object that must consist of at least a `name` and an `exec` function. The `description` property is metadata to give a friendly description of tasks. `description` will be rendered when choosing which tasks to run.
+
+```js
+module.exports = {
+  name: '🦄',
+  description: 'A truly magical task',
+  exec: (resolve, reject, shell, config, log, ora) => {}
+}
+```
+The `exec` function is what gets run by `kody`. You can do whatever you like inside this function but the arguments passed in are important. This is how `kody` exposes various things to the user. You are of course free to name the parameters however you wish 😄
+
+Let's run through them 👍
+* `resolve/reject` - `kody` uses `Promise`s so the first two arguments enable you to inform `kody` of when to move on. If your task is complete, invoke `resolve`. If your task stumbles, make use of `reject` 🛑
+* `shell` - one of the main things when automating set up etc. is running various shell commands. `kody` exposes the `shelljs` API to your tasks. We will use this in the `Hello World` example
+* `config` - a major thing with set ups is being able to keep everything in one config file. This way you won't have to hard code values into your tasks. `kody` will search for a `.kodyrc` file on start and pass that configuration object to your tasks. In here you can define any `JSON` you want. For example, a list of apps to install, editor plugins to install etc. Define under keys and access them in your tasks 👊
+* `log` - `kody` exposes a simple color logging utility that uses `chalk`. It's a function that takes three parameters. The first is the message you want to display. The second and third are the text color and background color respectively. The function expects color represented by a hexidecimal value 👍 You use this `log` function inside your standard `console` invocation.
+* `ora` - `kody` exposes the `ora` API so you can fire up a terminal spinner when needed too!
+
+
+#### Hello World
+For our first task, why not "Hello World!"? 😅
+
+We will use `shelljs` to invoke `say`.
+
+```javascript
+const task = {
+  name: 'Hello World 👋',
+  description: 'Hey from kody 🐻',
+  exec: (resolve, reject, shell) => {
+    shell.exec('say hello world!')
+    resolve()
+  }
+}
+module.exports = task
+```
+That's it! Run `kody` in the parent of your tasks directory and choose the `Hello World` task. Depending on your OS, you should hear `Hello World!` 🎉
+
 ### .kodyrc file
-The `.kodyrc` file is used to define variables that will be used by tasks that you define in your configuration. It will also define the order of any defined tasks.
-#### An example
+The `.kodyrc` file was mentioned briefly above. It's used to define values and configuration for your tasks.
+It also has two special keys. Both are _optional_
+
+* `task_directory` - this specifies the location of your tasks relative to your current working directory
+* `running_order` - this specifies a running order for your tasks
+
+#### An example .kodyrc
 ```json
 {
-  "order": [
-    "a.js",
-    "b.js",
+  "task_directory": "./awesome-tasks",
+  "running_order": [
+    "b",
+    "a",
     "*"
   ],
   "brewInstalls": [
-    "git",
-    "fish"
+    "google-chrome",
+    "visual-studio-code"
   ],
-  "globalNpmModules": [
-    "coffee-script",
-    "bower"
-  ]
 }
 ```
-The `order` key is the only key that is defined by `kody` and required if you need some tasks to run before others. In this example; `a` will run before `b`. A real example would be maybe say making sure `homebrew` would be installed before `brew cask` could be ran.
+In this `.kodyrc` file we specify that tasks are under `./awesome-tasks`. We also state that tasks run in any order but `b` must run before `a`.
+It's important to note that running order entries are task file names and not the name of the task. The extension is not necessary.
 
-Any other keys in the `.kodyrc` file are purely user defined and made available in any tasks you write/use. For example; you could use an array with key `globalNpmModules` to define a set of global npm modules to install on your machine.
+Any other keys in the `.kodyrc` file are user defined and made available in any tasks you write/use. In this example, we have `brewInstalls` which could be an array of homebrew casks to install.
 
-### Creating tasks
-Defining tasks for `kody` to run is what automates your machine setup.
-`kody` will automatically pick up any `.js` files within directories that contain `.tasks` in their name. For example; `kody.tasks/`.
-
-A symlinking task is included with `kody`. The rest is your imagination.
-
-The task boilerplate is as follows;
+### A real task
+For a real task example, let's install `Homebrew`.
 
 ```js
-const options = {
-  name: 'Task A',
-  description: 'A task that does something',
-  exec: function(resolve, reject, shell, log, config) {
-    // Do some stuff then resolve it.
-    resolve();
-  }
-};
-
-exports.options = options;
-```
-Tasks are defined by exporting an options object from `.js` files. You define `name`, `description` and `exec`.
-
-* `name {string}` - defines a task name to be used by `kody`.
-* `description {string}` - defines a description for a task.
-* `exec {function}` - defines a function that will be run by `kody`. The parameters are important. You can name them whatever you want. The `resolve/reject` function must be invoked in order for the task to finish as `kody` relies on `Promises` to run through tasks. `shell` gives you access to the `shelljs` API. `log` gives you access to `kody`'s instance of `winston` logger. Lastly, `config` gives you access to the `.kodyrc` config object.
-
-#### An example task
-For an example task, let's install `Homebrew`, the package manager for `OSX`.
-
-```js
-const PROPS = {
-    URL: 'https://raw.githubusercontent.com/Homebrew/install/master/install'
-  },
-  options = {
-    name: 'homebrew',
-    description: 'install and set up homebrew',
-    exec: function(resolve, reject, shell, log, config) {
-      const brewInstalled = shell.which('brew') !== null,
-        packages = config.brewInstalls;
-      if (!brewInstalled) {
-        log.info('installing Homebrew');
-        shell.exec(`ruby -e "$(curl -fsSL ${PROPS.URL})"`);
-        log.success('Homebrew installed');
-      } else
-        log.warn('Homebrew already installed');
-      shell.exec('brew doctor');
-      log.warn(`NOTE: any info from brew doctor may
-        account for any issues with package installs`);
-      if (packages.length > 0) {
-        shell.exec(`brew install ${packages.join(' ')}`);
-        log.success('brew packages installed');
+const { info } = console
+const HOMEBREW_URL =
+  'https://raw.githubusercontent.com/Homebrew/install/master/install'
+const task = {
+  name: 'Homebrew',
+  description: 'Install and set up Homebrew',
+  exec: function(resolve, reject, shell, config, log) {
+    const { brew_installs: packages } = config
+    const brewInstalled = shell.which('brew') !== null
+    if (!brewInstalled) {
+      try {
+        info(log('Installing Homebrew'))
+        const result = shell.exec(`ruby -e "$(curl -fsSL ${PROPS.URL})"`)
+        if (result.code !== 0) throw new Error(result.stderr)
+        else info(log('Homebrew installed'))
+      } catch (err) {
+        throw new Error(err)
       }
-      resolve();
+    } else info(log('Homebrew already installed'))
+    info(log('Running brew doctor'))
+    shell.exec('brew doctor')
+    info(
+      log(
+        `NOTE: Any info from brew doctor may account for any issues with package installs`
+      )
+    )
+    if (packages && packages.length > 0) {
+      info(log(`Installing ${packages.join(' ')}`))
+      shell.exec(`brew install ${packages.join(' ')}`)
+      info(log('Brew packages installed'))
+    } else {
+      info(log('No brew packages to install'))
     }
-  };
+    resolve()
+  },
+}
 
-exports.options = options;
+module.exports = task
 ```
-#### Tasks that have already been written
-* set up git
-* write OSX defaults
+It may look like there's a lot going on here. But the majority of this is actually logging to the `console` 😅
+
+### Tasks that have already been created
+* Set up git
+* Write OSX defaults
 * Install and set up Homebrew
-* Install brew cask and install other programs supported by brew cask such as Spotify, Chrome, etc.
+* Install programs supported by brew cask such as Spotify, Chrome, etc.
 * Set up fish shell
+* Set up oh-my-zsh
 * Install Atom IDE packages
+* Install and set up Visual Studio Code
 * Remove unwanted default system applications
 
+## Examples
+* [Jhey's .files](https://github.com/jh3y/kody_env) - My personal kody set up. Sets up IDE, installs programs, configures shell etc.
 
+## Development
+`kody` is easy to work on. It uses a self-documented `Makefile`.
+
+Just run `make` to see what tasks are available.
+
+First things first is to pull in dependencies with `make setup`.
+
+Then you'll be wanting to use `make develop` to start work. Use `npm link` to get a global instance of what you're working on available in the shell. You can test this by running `kody --version`.
+
+It's best to create a dummy folder that you can test things out in. This reduces the risk of breaking your `$HOME` setup.
+
+Enjoy! 😎
 
 ## Under the hood
-`kody` is written using `es6` with `babel` and is developed using `npm run scripts`.
+`kody` is written using `es6` with `babel` and is developed using a self-documented `Makefile`.
 
 ## Disclaimer
-I've only used `kody` on OSX(Up to Yosemite, haven't braved Capitan yet) and therefore I can't say for sure how it will run on non-unix based systems etc. `kody` will essentially make symbollic links to the $HOME directory on your PATH and then runs commands from the command line that would normally be executed with bash such as `npm install`.
+I've only used `kody` on OSX. I'm not responsible if you bork your machine configuration 😅 However, I'm happy to try and help you out if you get stuck!
 
-===
+## Contributing
+Any problems or questions, feel free to post an issue or tweet me, [@jh3yyy](https://twitter.com/@jh3yyy)! 🐦
 
-Any problems or questions, feel free to post an issue or tweet me, [@_jh3y](https://twitter.com/@_jh3y)!
+------
 
-@jh3y 2016
+Made with 🐻s by @jh3y 2018
