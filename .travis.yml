@@ -1,3 +1,8 @@
 language: node_js
 node_js:
-  - "0.10"
+  - "6"
+sudo: false
+install:
+  - make setup
+script:
+  - make test
